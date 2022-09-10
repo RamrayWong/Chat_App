@@ -5,14 +5,30 @@ import time
 from user import User
 
 
-# GLOBAL VARIABLES
+# GLOBAL CONTSTANTS 
 HOST = "localhost"
 PORT = 6000
 BUFSIZ = 1024
 ADDR = (HOST, PORT)
 MAX_CONNECTIONS = 10
 
+# GLOBAL VARS
+users = []
+SERVER = socket(AF_INET, SOCK_STREAM)
+SERVER.bind(ADDR) # set up server
 
+
+def broadcast(msg, name):
+    """
+
+    send new messages to all clients
+    :param msg: bytes()
+    :param name: str
+    :return
+    """
+    for user in users:
+        client = user.client
+        client.send(bytes(name, "utf-8") + msg)
 
 
 def client_communication(user):
@@ -22,22 +38,33 @@ def client_communication(user):
     :param client: socket
     :return:
     """
-
-        
     run = True
     client = user.client
-    addr = user.addr
 
     # get users name
-    name = client.rcv(BUFSIZ).decode("utf8")
-    msg
+    name = client.recv(BUFSIZ).decode("utf-8")
+    user.set_name(name)
+    msg = bytes(f"{name} has joined the chat!", "utf-8")
+    broadcast(msg,"") # broadcast welcome message
 
-    while run:
-        msg = client.recv(BUFSIZ)
-        if msg != bytes("{quit}", "utf8"):
-            client.close()
-        else: pass
 
+    while True:
+        try:
+            msg = client.recv(BUFSIZ)
+
+            if msg == bytes("{quit}", "utf-8"):
+                client.close()
+                users.remove(user)
+                broadcast(bytes(f"{name} has left the chat...", "utf8"), "")
+                print(f"[DISCONNECTED] {name} disconnected")
+                break
+            else: 
+                broadcast(msg, name + ": ") 
+                print(f"{name}: ", msg.decode("utf-8"))
+
+        except Exception as e:
+            print("[EXCEPTION]", e)
+            break
 
 def wait_for_connection(SERVER):
     """
@@ -52,22 +79,22 @@ def wait_for_connection(SERVER):
     while run:
         try:
             client, addr = SERVER.accept()
-            user = User(addr, name, client)
+            user = User(addr, client)
+            users.append(user)
             print(f"[CONNECTION] {addr} connected to server at {time.time()}")
-            Thread(target = handle_client, args = (user,)).start()
+            Thread(target = client_communication, args = (user,)).start()
         except Exception as e:
-            print("[FAILURE]", e)
+            print("[EXCEPTION]", e)
             run = False
 
-print("SERVER CRASHED")
+    print("SERVER CRASHED")
 
 
-SERVER = socket(AF_INET, SOCK_STREAM)
-SERVER.bind(ADDR)
+
 
 if __name__ == "__main__":
     SERVER.listen(MAX_CONNECTIONS) # listen for connections
-    print("Waiting for connection...")
+    print("Waiting for connections...")
     ACCEPT_THREAD = Thread(target = wait_for_connection, args=(SERVER,)) # Comma because pass tuple
     ACCEPT_THREAD.start()
     ACCEPT_THREAD.join()
