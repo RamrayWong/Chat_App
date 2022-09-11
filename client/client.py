@@ -6,7 +6,7 @@ class Client:
     for communication with server
     """
     HOST = "localhost"
-    PORT = 6000
+    PORT = 6001
     BUFSIZ = 1024
     ADDR = (HOST, PORT)
 
@@ -42,18 +42,29 @@ class Client:
         :param msg: str
         :return: None
         """
-        self.client_socket.send(bytes(msg, "utf-8"))
-        if msg == "{quit}":
-            self.client_socket.close()
+        try:
+            self.client_socket.send(bytes(msg, "utf8"))
+            if msg == "{quit}":
+                self.client_socket.close()
 
-    def get_message(self):
+        except:
+            self.client_socket = socket(AF_INET, SOCK_STREAM)
+            self.client_socket.connect(self.ADDR)
+            print(e)
+
+    def get_messages(self):
         """
         :returns a list of str messages
         :return: list[str]
         """
+        messages_copy = self.messages[:]
+
+        #  make sure memory is safe to access
         self.lock.acquire()
+        self.messages = []
         self.lock.release()
-        return self.messages
+
+        return messages_copy
 
     def disconnect(self):
         self.send_message("{quit}")

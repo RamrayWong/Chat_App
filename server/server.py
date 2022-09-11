@@ -7,7 +7,7 @@ from user import User
 
 # GLOBAL CONTSTANTS 
 HOST = "localhost"
-PORT = 6000
+PORT = 6001
 BUFSIZ = 1024
 ADDR = (HOST, PORT)
 MAX_CONNECTIONS = 10
