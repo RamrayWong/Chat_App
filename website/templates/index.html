@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock%} 
+{% block content %}
+
+{% if login %}
+{% block messageGreen %}{{session["name"]}} logged in! {% endblock %}
+{% endif %}
+
+<p id="test"></p>
+<div class="input-group mb-3">
+    <input type="text" class="form-control" placeholder="Message" aria-label="Message" id="msg">
+    <button class="btn btn-outline-secondary" type="button" id="sendBtn">Send</button>
+  </div>
+
+{% endblock %}

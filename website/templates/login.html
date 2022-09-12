@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock%} 
+{% block messageGrey %}
+{{session["name"]}} logged out!
+{% endblock %}
+
+{% block content %} 
+<form class="row g-3" action="#" method="POST">
+    <div class="col-auto">
+      <label for="staticName2" class="visually-hidden">Name</label>
+      <input type="text" readonly class="form-control-plaintext" id="staticName2" value="Enter Your Name:">
+    </div>
+    <div class="col-auto">
+      <label for="inputName" class="visually-hidden">Name</label>
+      <input type="text" class="form-control" name="inputName" id="inputName" placeholder="Name">
+    </div>
+    <div class="col-auto">
+      <button type="submit" class="btn btn-primary mb-3">Submit</button>
+    </div>
+  </form>
+<script type="text/javascript" src="{{ url_for('static', filename='index.js') }}"></script>
+{% endblock %}

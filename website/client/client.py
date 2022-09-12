@@ -50,7 +50,6 @@ class Client:
         except:
             self.client_socket = socket(AF_INET, SOCK_STREAM)
             self.client_socket.connect(self.ADDR)
-            print(e)
 
     def get_messages(self):
         """

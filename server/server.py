@@ -28,8 +28,10 @@ def broadcast(msg, name):
     """
     for user in users:
         client = user.client
-        client.send(bytes(name, "utf-8") + msg)
-
+        try:
+            client.send(bytes(name, "utf-8") + msg)
+        except Exception as e:
+            print("[EXCEPTION]", e)
 
 def client_communication(user):
     """
@@ -63,6 +65,7 @@ def client_communication(user):
                 print(f"{name}: ", msg.decode("utf-8"))
 
         except Exception as e:
+
             print("[EXCEPTION]", e)
             break
 
